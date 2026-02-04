@@ -44,7 +44,9 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.02);
+  /* Prioriza o topo do vídeo (cabeça/rosto) para não cortar em telas largas */
+  object-position: center 20%;
+  transform: scale(1);
   filter: saturate(1.05) contrast(1.02);
   z-index: 0;
 }
@@ -121,16 +123,31 @@ body {
   opacity: 0.72;
 }
 
-.ticker {
+.page-footer {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: rgba(234, 242, 255, 0.5);
+  z-index: 3;
+}
+
+.ticker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24px;
   height: 58px;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(7, 12, 26, 0.55);
   backdrop-filter: blur(10px);
   overflow: hidden;
+  contain: layout style;
 }
 
 .ticker__fade {
@@ -154,8 +171,10 @@ body {
   display: flex;
   align-items: center;
   width: max-content;
+  flex-shrink: 0;
   will-change: transform;
-  animation: ticker-move 18s linear infinite;
+  backface-visibility: hidden;
+  animation: ticker-move 22s linear infinite;
 }
 
 .ticker__track {
@@ -163,9 +182,10 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 0 28px 0 18px; /* padding-right ajuda a “fechar” o loop */
+  padding: 0 21px; /* padding-right ajuda a “fechar” o loop */
   white-space: nowrap;
   flex: 0 0 auto;
+  flex-shrink: 0;
 }
 
 .ticker__item {
@@ -188,11 +208,11 @@ body {
 }
 
 @keyframes ticker-move {
-  from {
-    transform: translateX(0);
+  0% {
+    transform: translate3d(0, 0, 0);
   }
-  to {
-    transform: translateX(-50%);
+  100% {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -294,9 +314,28 @@ body {
   letter-spacing: 0.01em;
 }
 
+/* Telas largas (desktop): fixa o topo do vídeo para nunca cortar a cabeça */
+@media (min-aspect-ratio: 16/10) {
+  .hero__video {
+    object-position: center top;
+  }
+}
+
+/* Telas muito largas (ultrawide) */
+@media (min-aspect-ratio: 21/9) {
+  .hero__video {
+    object-position: center 10%;
+  }
+}
+
 @media (max-width: 520px) {
   body {
     overflow: hidden;
+  }
+
+  /* Mobile: centro um pouco abaixo do topo para rosto + conteúdo */
+  .hero__video {
+    object-position: center 28%;
   }
 
   .hero__content {
@@ -324,5 +363,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero__video {
     display: none;
+  }
+
+  .ticker__marquee {
+    animation: none;
   }
 }
